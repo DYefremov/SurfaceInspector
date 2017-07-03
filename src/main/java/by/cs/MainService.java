@@ -18,7 +18,8 @@ import java.net.URISyntaxException;
  */
 public class MainService {
 
-    private StandaloneServer server;
+    private Service webService;
+    private Service guiService;
     private TrayIcon trayIcon;
 
     private static final Logger logger = LoggerFactory.getLogger(MainService.class);
@@ -36,9 +37,8 @@ public class MainService {
     public void init() {
 
         getSystemTray();
-        server = StandaloneServer.getInstance();
-        //Start the JavaFX ui
-        MainForm.launch(MainForm.class);
+        webService = StandaloneServer.getInstance();
+        guiService = new MainForm();
     }
 
     /**
@@ -65,10 +65,13 @@ public class MainService {
         final PopupMenu menu = new PopupMenu();
         final Menu openMenuItem = new Menu("Open");
         final MenuItem openWebItem = new MenuItem("Open web");
+        final MenuItem openGuiItem = new MenuItem("Open GUI");
         final MenuItem exitItem = new MenuItem("Exit");
         openMenuItem.add(openWebItem);
+        openMenuItem.add(openGuiItem);
 
         openWebItem.addActionListener(e -> showWeb());
+        openGuiItem.addActionListener(e -> showGui(true));
         trayIcon.addActionListener(ev -> showGui(true));
         exitItem.addActionListener(e -> {
             onExit();
@@ -103,9 +106,9 @@ public class MainService {
     private void showGui(boolean show) {
 
         if (show) {
-
+            new Thread(() -> guiService.startService()).start();
         } else {
-
+            new Thread(() -> guiService.stopService());
         }
     }
 
@@ -115,10 +118,10 @@ public class MainService {
     private void showWeb() {
 
         new Thread(() -> {
-            if (!server.isStarted()) {
+            if (!webService.isStarted()) {
                 new Thread(() -> trayIcon.displayMessage(null, "Please wait, the web server starts!", TrayIcon.MessageType.INFO)).start();
-                server.startServer();
-                while (!server.isStarted()) {
+                webService.startService();
+                while (!webService.isStarted()) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -133,7 +136,8 @@ public class MainService {
 
     private void onExit() {
 
-        server.stopServer();
+        webService.stopService();
+        guiService.stopService();
         System.exit(0);
     }
 

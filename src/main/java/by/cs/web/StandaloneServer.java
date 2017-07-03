@@ -1,6 +1,7 @@
 package by.cs.web;
 
 import by.cs.Constants;
+import by.cs.Service;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @autor Dmitriy V.Yefremov
  */
-public class StandaloneServer {
+public class StandaloneServer implements Service {
 
     private Server server;
     private static final Logger logger = LoggerFactory.getLogger(StandaloneServer.class);
@@ -27,21 +28,34 @@ public class StandaloneServer {
 
     }
 
-    public static synchronized StandaloneServer getInstance() {
-        if (INSTANCE == null) {
-            return new StandaloneServer();
-        }
-        return INSTANCE;
+    @Override
+    public void startService() {
+        startServer();
     }
 
+    @Override
+    public void restartService() {
+
+    }
+
+    @Override
+    public void stopService() {
+        stopServer();
+    }
+
+    @Override
     public boolean isStarted() {
         return server != null && server.isStarted();
+    }
+
+    public static synchronized StandaloneServer getInstance() {
+        return INSTANCE == null ? new StandaloneServer() : INSTANCE;
     }
 
     /**
      * Start jetty
      */
-    public void startServer() {
+    protected void startServer() {
 
         Thread thread = new Thread(() -> {
             try {

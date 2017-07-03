@@ -1,5 +1,6 @@
 package by.cs.cam;
 
+import by.cs.Service;
 import com.github.sarxos.webcam.Webcam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * @author Dmitriy V.Yefremov
  */
-public class DefaultCamService  implements CamService<BufferedImage> {
+public class DefaultCamService  implements CamService<BufferedImage> , Service{
 
     private boolean isRunning;
     private List<Webcam> webcams;
@@ -37,6 +38,26 @@ public class DefaultCamService  implements CamService<BufferedImage> {
         return instance;
     }
 
+    @Override
+    public void startService() {
+
+    }
+
+    @Override
+    public void restartService() {
+
+    }
+
+    @Override
+    public void stopService() {
+
+    }
+
+    @Override
+    public boolean isStarted() {
+        return false;
+    }
+
     /**
      * Initialize web cams
      */
@@ -56,7 +77,7 @@ public class DefaultCamService  implements CamService<BufferedImage> {
     @Override
     public void start() {
         if (webcam == null) {
-            logger.error("DefaultCamService error [start]: No camera!");
+            logger.error("DefaultCamService error [startService]: No camera!");
             return;
         }
 
@@ -90,6 +111,5 @@ public class DefaultCamService  implements CamService<BufferedImage> {
     public BufferedImage getImage() {
         return webcam != null ? webcam.getImage() : null;
     }
-
 
 }

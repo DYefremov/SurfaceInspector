@@ -40,7 +40,7 @@ public class S7 {
 
     /**
      * @param buffer
-     * @param pos start position
+     * @param pos startService position
      * @return 16 bit unsigned value : from 0 to 65535 (2^16-1)
      */
     public static int getWordAt(byte[] buffer, int pos) {
