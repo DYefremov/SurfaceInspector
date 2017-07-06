@@ -1,5 +1,6 @@
 package by.cs.cpu.s7;
 
+import by.cs.cpu.Cpu;
 import by.cs.cpu.CpuS7;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class S7Client {
 
     private boolean connected;
     private boolean hasError;
-    private CpuS7 cpu;
+    private Cpu cpu;
     private Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
@@ -51,15 +52,15 @@ public class S7Client {
         cpu = new CpuS7(0, 2, "127.0.0.1");
     }
 
-    public S7Client(CpuS7 cpu) {
+    public S7Client(Cpu cpu) {
         this.cpu = cpu;
     }
 
-    public CpuS7 getCpu() {
+    public Cpu getCpu() {
         return cpu;
     }
 
-    public void setCpu(CpuS7 cpu) {
+    public void setCpu(Cpu cpu) {
         this.cpu = cpu;
     }
 
@@ -75,9 +76,9 @@ public class S7Client {
         int remoteTSAP=(CONNECTION_TYPE<<8) + (cpu.getRack() * 0x20) + cpu.getSlot();
         int locTSAP = 0x0100 & 0x0000FFFF;
         int remTSAP = remoteTSAP & 0x0000FFFF;
-        LOCAL_TSAP_HI = (byte) (locTSAP>>8);
+        LOCAL_TSAP_HI = (byte) (locTSAP >> 8);
         LOCAL_TSAP_LO = (byte) (locTSAP & 0x00FF);
-        REMOTE_TSAP_HI= (byte) (remTSAP>>8);
+        REMOTE_TSAP_HI= (byte) (remTSAP >> 8);
         REMOTE_TSAP_LO= (byte) (remTSAP & 0x00FF);
 
         try {
@@ -100,7 +101,8 @@ public class S7Client {
                 if (!hasError) {
                     size = receivePacket();
                 }
-                connected = size == 22 && lastPduType !=(byte)0xD0;
+
+                connected = size == 22 && lastPduType ==(byte)0xD0;
             }
         } catch (IOException e) {
             connected = false;
@@ -172,11 +174,11 @@ public class S7Client {
             receivePacket(PDU, 0, 4);
 
             if (!hasError) {
-                size= S7.getWordAt(PDU,2);
+                size= S7.getWordAt(PDU, 2);
                 // Check 0 bytes data Packet (only TPKT+COTP = 7 bytes)
                 if (size == ISO_H_SIZE) {
                     // Skip remaining 3 bytes and Done is still false
-                    receivePacket(PDU,4, 3);
+                    receivePacket(PDU, 4, 3);
                 } else {
                     // a valid Length !=7 && >16 && <247
                     hasError = (size > MAX_PDU_SIZE) || (size < MIN_PDU_SIZE);
@@ -249,7 +251,7 @@ public class S7Client {
                 }
                 availableSize = inputStream.available();
                 expired = cnt > timeout;
-                // If timeout we clean the buffer
+                // If time out we clean the buffer
                 if (expired && (availableSize > 0) && !hasError) {
                     inputStream.read(PDU, 0, availableSize);
                 }

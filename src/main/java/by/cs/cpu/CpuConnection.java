@@ -1,9 +1,10 @@
 package by.cs.cpu;
 
+
 /**
  *@author Dmitriy V.Yefremov
  */
-public interface CpuConnection<T> {
+public interface CpuConnection<T extends Cpu> {
 
     void connect();
 

@@ -5,4 +5,10 @@ package by.cs.cpu;
  */
 public interface Cpu {
 
+    int getRack();
+
+    int getSlot();
+
+    String getIp();
+
 }

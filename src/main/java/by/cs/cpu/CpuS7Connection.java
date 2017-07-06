@@ -5,21 +5,21 @@ import by.cs.cpu.s7.S7Client;
 /**
  * @author Dmitriy V.Yefremov
  */
-public class CpuS7Connection implements CpuConnection<CpuS7> {
+public class CpuS7Connection implements CpuConnection<Cpu> {
 
-    private CpuS7 cpu;
+    private Cpu cpu;
     private S7Client s7Client;
 
     public CpuS7Connection() {
        this(new CpuS7(0, 2, "127.0.0.1"));
     }
 
-    public CpuS7Connection(CpuS7 cpu) {
+    public CpuS7Connection(Cpu cpu) {
         this.cpu = cpu;
         s7Client = new S7Client(cpu);
     }
 
-    public CpuS7 getCpu() {
+    public Cpu getCpu() {
         return cpu;
     }
 
@@ -33,7 +33,7 @@ public class CpuS7Connection implements CpuConnection<CpuS7> {
     }
 
     @Override
-    public void connect(CpuS7 cpu) {
+    public void connect(Cpu cpu) {
         this.cpu = cpu;
         s7Client.setCpu(cpu);
         connect();
@@ -50,7 +50,7 @@ public class CpuS7Connection implements CpuConnection<CpuS7> {
     }
 
     @Override
-    public CpuS7 getCurrentCpu() {
+    public Cpu getCurrentCpu() {
         return cpu;
     }
 
